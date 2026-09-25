@@ -9,6 +9,7 @@ from app.core.logging import logger, request_id_ctx_var
 from app.db.base import Base
 from app.db.session import engine
 from app.api.v1.api import api_router
+from app.api.v1.endpoints import payments as root_payments
 from app.schemas.common import HealthResponse
 
 
@@ -38,8 +39,8 @@ app = FastAPI(
     - **Authentication**: JWT-based authentication with role-based access control (Patient / Admin).
     - **Diagnostic Catalogue**: Centers, tests, and centre-specific pricing with Redis caching.
     - **Booking Lifecycle**: State-machine validated booking transitions (`PENDING`, `CONFIRMED`, `FAILED`, `CANCELLED`).
-    - **Simulated Payment Gateway**: Instant transaction processing with scenario simulation.
-    - **Idempotent Webhooks**: Safe event-driven processing preventing duplicate charges or race conditions.
+    - **Simulated Payment Gateway**: Instant transaction processing with scenario simulation (`POST /payments/`).
+    - **Idempotent Webhooks**: Safe event-driven processing preventing duplicate charges or race conditions (`POST /payments/webhook/`).
     """,
 )
 
@@ -107,6 +108,10 @@ def health_check():
 
 # Include API v1 Routes
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+# Also expose payments router at root level (POST /payments/ and POST /payments/webhook/)
+# as requested specifically in assignment prompt
+app.include_router(root_payments.router, tags=["Payments & Webhooks (Root Route)"])
 
 
 @app.get("/", include_in_schema=False)
