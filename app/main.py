@@ -15,9 +15,14 @@ from app.schemas.common import HealthResponse
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: ensure tables are created
+    # Startup: ensure tables are created and initial seed data exists
     logger.info("Initializing database tables...")
     Base.metadata.create_all(bind=engine)
+    try:
+        from scripts.seed_data import seed
+        seed()
+    except Exception as e:
+        logger.warning(f"Auto-seeding skipped: {e}")
     logger.info(f"{settings.PROJECT_NAME} initialized successfully.")
     yield
     # Shutdown
