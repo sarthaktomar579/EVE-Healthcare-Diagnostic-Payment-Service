@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 from app.models.booking import BookingStatus
 
 
@@ -17,7 +17,6 @@ class BookingCreate(BaseModel):
     @classmethod
     def validate_future_date(cls, v: datetime) -> datetime:
         now = datetime.now(timezone.utc)
-        # Ensure v has timezone or compare as UTC
         check_time = v if v.tzinfo else v.replace(tzinfo=timezone.utc)
         if check_time <= now:
             raise ValueError("Appointment datetime must be in the future")
@@ -52,8 +51,7 @@ class BookingOut(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class BookingListOut(BaseModel):
@@ -67,5 +65,4 @@ class BookingListOut(BaseModel):
     status: BookingStatus
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
