@@ -1,7 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class TestBase(BaseModel):
@@ -30,8 +30,7 @@ class TestOut(TestBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CentreTestOffer(BaseModel):
@@ -47,5 +46,4 @@ class CentreTestOffer(BaseModel):
     duration_minutes: int
     is_available: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
